@@ -82,8 +82,8 @@ class Atm {
         $deposit = trim(fgets(STDIN));
         self::$balance += $deposit;
         echo "¥" . $deposit . "が入金されました" . PHP_EOL . "カードと明細書をお取りください" . PHP_EOL;
-        echo "残高";
-        print_r(self::$balance);
+        // echo "残高";
+        // print_r(self::$balance);
     }
 
     public function showBalance() {
@@ -91,6 +91,3 @@ class Atm {
     }
 
 }
-
-$atm = new Atm("user");
-$atm->atmOperation();
