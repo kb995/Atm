@@ -66,6 +66,10 @@ class Atm {
     public function withdrawMoney() {
         echo "お引き出し金額を入力してください" . PHP_EOL;
         $withdraw = trim(fgets(STDIN));
+        $error_flg = ValidationMoney::errorCheck($withdraw);
+        // if($error_flg) {
+        //     return;
+        // }
         if(self::$balance < $withdraw) {
             echo "お引き出し金額が残高を超えています" . PHP_EOL;
             return;
