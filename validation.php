@@ -8,7 +8,7 @@ class Validation {
 
     // 空チェック
     public static function validationEmpty($input) {
-        if(empty($input)) {
+        if(empty($input) && $input != 0) {
             self::$errors[] = "入力してください";
             return false;
         }
