@@ -23,6 +23,11 @@ class Atm {
     public $user;
     public static $balance = 10000;
 
+    private const MENU_TYPE_WITHDRAW = 1;
+    private const MENU_TYPE_DEPOSIT = 2;
+    private const MENU_TYPE_BALANCE = 3;
+    private const MENU_TYPE_EXIT = 0;
+
     public function __construct($user) {
         $this->user = $user;
         $this->userAuth();
@@ -38,60 +43,79 @@ class Atm {
     // ATM操作選択
     public function atmOperation() {
         echo self::SELECT_TRANSACTION_MESSAGE . PHP_EOL;
-        $select = trim(fgets(STDIN));
-        echo PHP_EOL;
+        $select = self::input('operation');
 
         switch($select) {
-            case 1: // 引き出し処理
-                $input = $this->withdrawMoney();
+            case self::MENU_TYPE_WITHDRAW: // 引き出し処理
+                $this->withdrawMoney();
                 break;
 
-            case 2: // 入金処理
-                $input = $this->depositMoney();
-                echo $input . "円が入金されました。明細書をお取りください" . PHP_EOL;
-                echo PHP_EOL;
+            case self::MENU_TYPE_DEPOSIT: // 入金処理
+                $this->depositMoney();
                 break;
 
-            case 3: // 残高確認
-                echo $this->showBalance();
-                echo PHP_EOL;
+            case self::MENU_TYPE_BALANCE: // 残高確認
+                $this->showBalance();
                 break;
 
-            case 0: // 終了
-            echo "操作が中断されました" . PHP_EOL;
-            exit;
+            case self::MENU_TYPE_EXIT: // 終了
+                $this->end();
+                break;
         }
     }
 
+    // 引き出しメソッド
     public function withdrawMoney() {
         echo "お引き出し金額を入力してください" . PHP_EOL;
-        $withdraw = trim(fgets(STDIN));
-        $error_flg = ValidationMoney::errorCheck($withdraw);
-        // if($error_flg) {
-        //     return;
-        // }
-        if(self::$balance < $withdraw) {
-            echo "お引き出し金額が残高を超えています" . PHP_EOL;
-            return;
-        }
+        $withdraw = self::input('withdraw');
         self::$balance -= $withdraw;
         echo "¥" . $withdraw . "が引き出されました" . PHP_EOL . "カードと明細書をお取りください" . PHP_EOL;
-        // echo "残高";
-        // print_r(self::$balance);
         echo PHP_EOL;
     }
 
+    // 預け入れメソッド
     public function depositMoney() {
         echo "預け入れ金額を入力してください" . PHP_EOL;
-        $deposit = trim(fgets(STDIN));
+        $deposit = self::input('deposit');
         self::$balance += $deposit;
         echo "¥" . $deposit . "が入金されました" . PHP_EOL . "カードと明細書をお取りください" . PHP_EOL;
-        // echo "残高";
-        // print_r(self::$balance);
+        echo PHP_EOL;
     }
 
+    // 残高確認メソッド
     public function showBalance() {
-        return "残高は". self::$balance ."円です";
+        echo "残高は". self::$balance ."円です";
+    }
+
+    // 操作終了メソッド
+    public function end() {
+        echo "操作が中断されました" . PHP_EOL;
+        exit;
+    }
+
+    // 標準入力メソッド
+    public function input($type) {
+        $input = trim(fgets(STDIN));
+        switch($type) {
+        case 'id':
+            break;
+        case 'password':
+            break;
+
+        case 'operation':
+            $error_flg = ValidationOperation::check($input);
+            break;
+        case 'withdraw':
+            $error_flg = ValidationWithdraw::check($input);
+            break;
+        case 'deposit':
+            $error_flg = ValidationDeposit::check($input);
+            break;
+        }
+        if($error_flg === false) {
+            return self::input($type);
+        }
+        return $input;
     }
 
 }
