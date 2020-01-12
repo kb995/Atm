@@ -103,10 +103,12 @@ class Atm {
             break;
 
         case 'operation':
-            $error_flg = ValidationOperation::check($input);
+            $validation = new ValidationOperation();
+            $error_flg = $validation->check($input);
             break;
         case 'withdraw':
-            $error_flg = ValidationWithdraw::check($input);
+            $validation = new ValidationOperation();
+            $error_flg = $validation->check($input);
             break;
         case 'deposit':
             $error_flg = ValidationDeposit::check($input);
