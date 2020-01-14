@@ -2,7 +2,7 @@
 class Atm {
     //　メッセージ定数宣言
     // ==============================
-    private const HELLO_MESSAGE = "いらっしゃいませ " . PHP_EOL . "カードを挿入( ※ IDを入力 )してください" . PHP_EOL;
+    private const HELLO_MESSAGE = "いらっしゃいませ " . PHP_EOL . "カードを挿入( ※ IDを入力 )してください";
     private const PASSWORD_MESSAGE = "4桁の暗証番号を入力してください" . PHP_EOL;
     private const SELECT_TRANSACTION_MESSAGE = <<<EOD
     ご希望のお取引を選択してください
@@ -20,24 +20,43 @@ class Atm {
 
     //　ATMプロパティ / コンストラクタ
     // ==============================
-    public $user;
-    public static $balance = 10000;
+    public static $user;
+    // public static $user_id;
+    // public static $user_pass;
+    // public static $balance = 10000;
+
 
     private const MENU_TYPE_WITHDRAW = 1;
     private const MENU_TYPE_DEPOSIT = 2;
     private const MENU_TYPE_BALANCE = 3;
     private const MENU_TYPE_EXIT = 0;
 
-    public function __construct($user) {
-        $this->user = $user;
-        $this->userAuth();
+    public function __construct() {
+        // self::$user_id = 1111;
+        // self::$user_pass = 2222;
+        self::userAuth();
     }
-
     //　ATM操作メソッド
     // ==============================
     // ユーザー認証
     public function userAuth() {
         echo self::HELLO_MESSAGE . PHP_EOL;
+        $input_id = self::input('id');
+        // var_dump($input_id);
+        // var_dump(self::$input_id);
+        // id あるかチェック
+        if($input_id != self::$user_id) {
+            echo "idが存在しません" . PHP_EOL;
+            return self::userAuth();
+        }
+
+        echo self::PASSWORD_MESSAGE;
+        $input_pass = self::input('password');
+        // id パスワード一致チェック
+        if($input_pass != self::$user_pass) {
+            echo "パスワードが違います" . PHP_EOL;
+            return self::userAuth();
+        }
     }
 
     // ATM操作選択
@@ -84,7 +103,7 @@ class Atm {
 
     // 残高確認メソッド
     public function showBalance() {
-        echo "残高は". self::$balance ."円です";
+        echo "残高は". self::$balance ."円です" . PHP_EOL;
     }
 
     // 操作終了メソッド
@@ -98,18 +117,24 @@ class Atm {
         $input = trim(fgets(STDIN));
         switch($type) {
         case 'id':
-            break;
+            $validation = new ValidationID();
+            $error_flg = $validation->check($input);
+        break;
         case 'password':
-            break;
-
+            $validation = new ValidationPassword();
+            $error_flg = $validation->check($input);
+        break;
         case 'operation':
-            $error_flg = ValidationOperation::check($input);
+            $validation = new ValidationOperation();
+            $error_flg = $validation->check($input);
             break;
         case 'withdraw':
-            $error_flg = ValidationWithdraw::check($input);
+            $validation = new ValidationWithdraw();
+            $error_flg = $validation->check($input);
             break;
         case 'deposit':
-            $error_flg = ValidationDeposit::check($input);
+            $validation = new ValidationDeposit();
+            $error_flg = $validation->check($input);
             break;
         }
         if($error_flg === false) {
@@ -117,5 +142,4 @@ class Atm {
         }
         return $input;
     }
-
 }

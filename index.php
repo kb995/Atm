@@ -23,14 +23,20 @@
 // - 各クラスMoney, Operation, Passwordなどに応じてValidationクラスのメソッドを組み合わせる
 // 標準入力をメソッド化、引数に応じてどのバリデーションを行うか判別して最後に値を返す
 
+// 修正点_3
+// 各操作のバリデーションをValidationクラスを継承させて作る
+// 継承したバリデーションはインスタンス化して使う
+// ATMクラス内にユーザー認証処理追加 (ユーザーは仮のものをAtmクラスのプロパティとして作る)
+
+
 echo "問題69: " . PHP_EOL;
 
-// require('User.php');
+require('./User.php');
 require('./Atm.php');
 require('./validation.php');
 
 
 // インスタンス化
-$atm = new Atm("user");
+$atm = new Atm();
 // ATM操作実行
 $atm->atmOperation();
