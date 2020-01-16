@@ -26,17 +26,5 @@
 // 修正点_3
 // 各操作のバリデーションをValidationクラスを継承させて作る
 // 継承したバリデーションはインスタンス化して使う
-// ATMクラス内にユーザー認証処理追加 (ユーザーは仮のものをAtmクラスのプロパティとして作る)
-
-
-echo "問題69: " . PHP_EOL;
-
-require('./User.php');
-require('./Atm.php');
-require('./validation.php');
-
-
-// インスタンス化
-$atm = new Atm();
-// ATM操作実行
-$atm->atmOperation();
+// ATMクラス内にユーザー認証処理追加 (ユーザーは仮のものをAtmクラスの$operation_userに入れる)
+// id認証処理 / pass認証処理

@@ -39,11 +39,11 @@ class Validation {
     }
 
     // 残高超えチェック
-    public function validationOver($input) {
-        if(Atm::$balance < $input) {
-            $this->errors[] = "お引き出し金額が残高を超えています";
-        }
-    }
+    // public function validationOver($input) {
+    //     if($atm->operation_user->balance < $input) {
+    //         $this->errors[] = "お引き出し金額が残高を超えています";
+    //     }
+    // }
 
     // 文字列チェック
     public function validationString($input) {
@@ -71,7 +71,7 @@ class validationWithdraw extends Validation {
         $this->validationEmpty($input);
         $this->validationInt($input);
         $this->validationWithdraw($input, 100000, 1000);
-        $this->validationOver($input);
+        // $this->validationOver($input);
         
         if($this->errors) {
             $this->showErrors();

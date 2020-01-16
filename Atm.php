@@ -1,4 +1,10 @@
 <?php
+echo "問題69: " . PHP_EOL;
+
+require('./User.php');
+require('./validation.php');
+
+
 class Atm {
     //　メッセージ定数宣言
     // ==============================
@@ -16,53 +22,54 @@ class Atm {
     【 1 】 => はい
     【 2 】 => いいえ
     EOD;
-    private const EXIT_MESSAGE = "ご利用ありがとうございました。お取り忘れにご注意ください。" . PHP_EOL;
+    private const EXIT_MESSAGE = "ご利用ありがとうございまた。お忘れ物にご注意下さい。" . PHP_EOL;
 
     //　ATMプロパティ / コンストラクタ
     // ==============================
-    public static $user;
-    // public static $user_id;
-    // public static $user_pass;
-    // public static $balance = 10000;
+    public $operation_user; // Userクラスのインスタンスが入る
 
-
+    // メニュー選択定数
     private const MENU_TYPE_WITHDRAW = 1;
     private const MENU_TYPE_DEPOSIT = 2;
     private const MENU_TYPE_BALANCE = 3;
     private const MENU_TYPE_EXIT = 0;
 
     public function __construct() {
-        // self::$user_id = 1111;
-        // self::$user_pass = 2222;
-        self::userAuth();
+        global $user_1;
+        $this->operation_user = new User(1111, 2222, "kuboshima", 10000);
+        $this->userAuth();
     }
     //　ATM操作メソッド
     // ==============================
     // ユーザー認証
     public function userAuth() {
+        // id一致チェック
         echo self::HELLO_MESSAGE . PHP_EOL;
-        $input_id = self::input('id');
-        // var_dump($input_id);
-        // var_dump(self::$input_id);
-        // id あるかチェック
-        if($input_id != self::$user_id) {
+        echo "id : 1111" . PHP_EOL;
+        $input_id = $this->input('id');
+        if($this->operation_user->id != $input_id) {
             echo "idが存在しません" . PHP_EOL;
-            return self::userAuth();
+            return $this->userAuth();
+        }else{
+            echo "【id認証完了】" . PHP_EOL;
         }
 
+        // パスワード一致チェック
         echo self::PASSWORD_MESSAGE;
-        $input_pass = self::input('password');
-        // id パスワード一致チェック
-        if($input_pass != self::$user_pass) {
+        echo "pass : 2222" . PHP_EOL;
+        $input_pass = $this->input('password');
+        if($this->operation_user->password != $input_pass) {
             echo "パスワードが違います" . PHP_EOL;
-            return self::userAuth();
+            return $this->userAuth();
+        }else{
+            echo "【パス認証完了】" . PHP_EOL;
         }
     }
 
     // ATM操作選択
     public function atmOperation() {
         echo self::SELECT_TRANSACTION_MESSAGE . PHP_EOL;
-        $select = self::input('operation');
+        $select = $this->input('operation');
 
         switch($select) {
             case self::MENU_TYPE_WITHDRAW: // 引き出し処理
@@ -86,8 +93,10 @@ class Atm {
     // 引き出しメソッド
     public function withdrawMoney() {
         echo "お引き出し金額を入力してください" . PHP_EOL;
-        $withdraw = self::input('withdraw');
-        self::$balance -= $withdraw;
+        $withdraw = $this->input('withdraw');
+        $this->operation_user->balance -= $withdraw;
+        echo "ユーザー残高" . PHP_EOL;
+        echo $this->operation_user->balance . PHP_EOL;
         echo "¥" . $withdraw . "が引き出されました" . PHP_EOL . "カードと明細書をお取りください" . PHP_EOL;
         echo PHP_EOL;
     }
@@ -95,15 +104,17 @@ class Atm {
     // 預け入れメソッド
     public function depositMoney() {
         echo "預け入れ金額を入力してください" . PHP_EOL;
-        $deposit = self::input('deposit');
-        self::$balance += $deposit;
+        $deposit = $this->input('deposit');
+        $this->operation_user->balance += $deposit;
+        echo "ユーザー残高" . PHP_EOL;
+        echo $this->operation_user->balance . PHP_EOL;
         echo "¥" . $deposit . "が入金されました" . PHP_EOL . "カードと明細書をお取りください" . PHP_EOL;
         echo PHP_EOL;
     }
 
     // 残高確認メソッド
     public function showBalance() {
-        echo "残高は". self::$balance ."円です" . PHP_EOL;
+        echo "残高は". $this->operation_user->balance ."円です" . PHP_EOL;
     }
 
     // 操作終了メソッド
@@ -138,8 +149,13 @@ class Atm {
             break;
         }
         if($error_flg === false) {
-            return self::input($type);
+            return $this->input($type);
         }
         return $input;
     }
 }
+
+// インスタンス化
+$atm = new Atm();
+// ATM操作実行
+$atm->atmOperation();
