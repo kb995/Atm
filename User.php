@@ -1,59 +1,73 @@
 <?php
 class User {
-    public $id;
-    public $password;
-    public $name;
-    public $balance;
+    const LIST_ID = 0;
+    const LIST_PASS = 1;
+    const LIST_NAME = 2;
+    const LIST_BALANCE = 3;
+    const LIST_PATH = "./user_list.csv";
 
-    // public function __construct($id, $password, $name, $balance) {
-    //     $this->id = $id;
-    //     $this->password = $password;
-    //     $this->name = $name;
-    //     $this->balance = $balance;
-    // }
+    private $id;
+    private $password;
+    private $name;
+    private $balance;
 
-    public function getUserId($input_id) {
-        $fp = fopen('test.csv', 'r');
-        while (($line = fgetcsv($fp)) !== false) {
-            if($line[0] === $input_id) {
-                return $line[0];
+    // ユーザー情報セット
+    public function setUser($input_id) {
+        $fp = fopen(self::LIST_PATH, 'r');
+        while(($line = fgetcsv($fp))) {
+            if($line[self::LIST_ID] === $input_id) {
+                $this->id = $line[self::LIST_ID];
+                $this->password = $line[self::LIST_PASS];
+                $this->name = $line[self::LIST_NAME];
+                $this->balance = $line[self::LIST_BALANCE];
             }
         }
         fclose($fp);
     }
-    public function getUserPass($input_id) {
-        $fp = fopen('test.csv', 'r');
-        while (($line = fgetcsv($fp)) !== false) {
-            if($line[1] === $input_id) {
-                return $line[1];
+    // IDが存在するか確認
+    public function searchUserId($input_id) {
+        $fp = fopen(self::LIST_PATH, 'r');
+        while (($line = fgetcsv($fp))) {
+            if($line[self::LIST_ID] === $input_id) {
+                $this->id = $line[self::LIST_ID];
             }
         }
         fclose($fp);
     }
-
-    // public function getUserById($id) {
-    //     $fp = fopen('test.csv', 'r');
-    //     while (($line = fgetcsv($fp)) !== false) {
-    //         if($line[$id] === $id) {
-    //             $this->user_info = fgetcsv($fp);
-    //             echo $this->user_info;
-    //             return $this->user_info;
-    //         }
-    //     }
-    //     fclose($fp);
-    // }
-
-    public function setUserInfo($id) {
-        $fp = fopen('test.csv', 'r');
-        while (($line = fgetcsv($fp)) !== false) {
-            if($line[0] == $id) {
-                $this->id = $list[0];
-                $this->password = $list[1];
-                $this->name = $list[2];
-                $this->balance = $list[3];
-            }
+    // パスワード照会
+    public function checkPass($input_pass) {
+        if($this->password != $input_pass) {
+            echo "パスワードが違います。" . PHP_EOL;
+            return false;
         }
-        fclose($fp);
+    }
+
+    // アクセサメソッド
+    // ゲッター
+    public function getUserId() {
+        return $this->id;
+    }
+    public function getUserPass() {
+        return $this->password;
+    }
+    public function getName() {
+        return $this->name;
+    }
+    public function getUserBalance() {
+        return $this->balance;
+    }
+    // セッター
+    public function setUserBalance($input) {
+        $this->balance;
+    }
+
+    public function withdrawBalance($input) {
+        $this->balance -= $input;
+        return $this->balance;
+    }
+    public function depositBalance($input) {
+        $this->balance += $input;
+        return $this->balance;
     }
 }
 

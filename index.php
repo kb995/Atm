@@ -31,7 +31,7 @@
 
 // 修正点_4
 // csvデータにユーザリスト準備
-// Userクラス内のgetUserById()メソッドでcsv内のidの列を検索,一致データがあればそれを返す
+// Userクラス内のgetUserById()メソッドでcsv内のidの1列目を検索,一致データがあればそれを返す
 // Atmクラス内のUserAuthメソッドで上で受け取ったデータを$user_dateに入れ、$input_idと比較させる
 // passwordも同じようにチェックする
 

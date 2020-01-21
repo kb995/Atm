@@ -42,29 +42,29 @@ class Atm {
     // ==============================
     // ユーザー認証
     public function userAuth() {
-        // id一致チェック
+        // id存在チェック
         echo self::HELLO_MESSAGE . PHP_EOL;
         echo "id : 0001" . PHP_EOL;
         $input_id = $this->input('id');
-        $this->operation_user->id = $this->operation_user->getUserId(str_pad($input_id, 4, 0, STR_PAD_LEFT));
-        if($this->operation_user->id != $input_id) {
+        $this->operation_user->searchUserId(str_pad($input_id, 4, 0, STR_PAD_LEFT));
+        // 入力したidがcsvデータに存在するか確認,あれば操作ユーザーにセット
+        if($this->operation_user->getUserId() != $input_id) {
             echo "idが存在しません" . PHP_EOL;
             return $this->userAuth();
         }else{
             echo "【id認証完了】" . PHP_EOL;
+            // idの存在があるので操作ユーザー情報をセットする
+            $this->operation_user->setUser($input_id);
         }
         // パスワード一致チェック
         echo self::PASSWORD_MESSAGE;
         echo "pass : 1111" . PHP_EOL;
         $input_pass = $this->input('password');
-        $this->operation_user->password = $this->operation_user->getUserPass(str_pad($input_pass, 4, 0, STR_PAD_LEFT));
-
-        if($this->operation_user->password != $input_pass) {
-            echo "パスワードが違います" . PHP_EOL;
+        // 操作ユーザーのpassと入力値を照会
+        if($this->operation_user->checkPass($input_pass) === false) {
             return $this->userAuth();
-        }else{
-            echo "【パス認証完了】" . PHP_EOL;
         }
+        echo "【パス認証完了】" . PHP_EOL;
     }
     // ATM操作選択メソッド
     public function atmOperation() {
@@ -93,25 +93,29 @@ class Atm {
     public function withdrawMoney() {
         echo "お引き出し金額を入力してください" . PHP_EOL;
         $withdraw = $this->input('withdraw');
-        $this->operation_user->balance -= $withdraw;
-        echo "ユーザー残高 | ¥ ";
-        echo $this->operation_user->balance . PHP_EOL;
+        if($withdraw > $this->operation_user->getUserBalance()) {
+            echo "お引き出し金額が残高を超えています。もう一度入力して下さい。" . PHP_EOL;
+            $this->withdrawMoney();
+        }
+        $this->operation_user->withdrawBalance($withdraw);
         echo "¥" . $withdraw . "が引き出されました" . PHP_EOL . "カードと明細書をお取りください" . PHP_EOL;
+        echo "ユーザー残高 | ¥ ";
+        echo $this->operation_user->getUserBalance() . PHP_EOL;
         echo PHP_EOL;
     }
     // 預け入れメソッド
     public function depositMoney() {
         echo "預け入れ金額を入力してください" . PHP_EOL;
         $deposit = $this->input('deposit');
-        $this->operation_user->balance += $deposit;
-        echo "ユーザー残高 | ¥ ";
-        echo $this->operation_user->balance . PHP_EOL;
+        $this->operation_user->depositBalance($deposit);
         echo "¥" . $deposit . "が入金されました" . PHP_EOL . "カードと明細書をお取りください" . PHP_EOL;
+        echo "ユーザー残高 | ¥ ";
+        echo $this->operation_user->getUserBalance() . PHP_EOL;
         echo PHP_EOL;
     }
     // 残高確認メソッド
     public function showBalance() {
-        echo "残高は". $this->operation_user->balance ."円です" . PHP_EOL;
+        echo "残高は". $this->operation_user->getUserBalance() ."円です" . PHP_EOL;
         $this->RetryOperation();
     }
     // 操作終了メソッド
@@ -125,8 +129,11 @@ class Atm {
         $select = $this->input('operation');
         if($select == 1) {
             return $this->atmOperation();
-        }else{
+        }elseif($select == 2){
             $this->end();
+        }else{
+            echo "もう一度入力して下さい" . PHP_EOL;
+            return $this->RetryOperation();
         }
     }
 
